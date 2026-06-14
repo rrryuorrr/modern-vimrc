@@ -1,7 +1,12 @@
 # modern-vimrc 使い方ガイド
 
 このガイドでは、modern-vimrc に組み込まれているコマンド、キーマップ、
-主要オプションの使い方を説明します。Vim と GVim の両方で利用できます。
+主要オプションの使い方を説明します。Vim 7.4+、Vim 8.x、Vim 9.xの
+端末版VimとGVimで利用できます。
+
+Vim 7.4はパッチレベルやビルド構成によって利用可能な機能が異なります。
+この設定は機能を自動検出し、未対応のオプションだけを無効化します。
+公式Vim 7.4.0でも設定ファイルの読み込みを確認しています。
 
 ![GVim overview](assets/gvim-gotham-preview.png)
 
@@ -268,7 +273,7 @@ Quickfixはプロジェクト全体の検索結果やビルドエラー、Locati
 | `scrolloff` / `sidescrolloff` | `5` | カーソル周囲に最低5行・5列を表示 |
 | `nowrap` | 有効 | 長い行を既定では折り返さない |
 | `linebreak` / `breakindent` | 有効 | 折り返し時に読みやすく表示 |
-| `termguicolors` | 有効 | Gothamの24-bitカラーを表示 |
+| `termguicolors` | 対応環境で有効 | Gothamの24-bitカラーを表示 |
 | `laststatus` | `2` | ステータスラインを常時表示 |
 
 ### 検索・入力
@@ -302,7 +307,7 @@ Quickfixはプロジェクト全体の検索結果やビルドエラー、Locati
 
 | オプション | 既定値 | 意味 |
 |---|---|---|
-| `completeopt` | `menuone,noselect` | 候補が1件でもメニューを出し、自動選択しない |
+| `completeopt` | Vim 8+は`menuone,noselect`、Vim 7.4は`menuone` | 候補が1件でもメニューを表示 |
 | `complete` | `.,w,b,u,t,i` | 現在・他ウィンドウ・バッファ・タグ・includeを補完元にする |
 | `wildmode` | `longest:full,full` | 最長一致を補完後、全候補を順番に表示 |
 

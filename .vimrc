@@ -1,14 +1,13 @@
 " Modern, plugin-free Vim configuration
-" Target: Vim 8.2+ / Vim 9.x
-
-if exists('g:loaded_modern_vimrc')
-  finish
-endif
-let g:loaded_modern_vimrc = 1
+" Target: Vim 7.4+ / Vim 8.x / Vim 9.x
 
 scriptencoding utf-8
+let g:modern_vimrc_path = expand('<sfile>:p')
 set nocompatible
 filetype plugin indent on
+if exists('g:colors_name')
+  unlet g:colors_name
+endif
 syntax enable
 
 " Core behavior
@@ -18,13 +17,23 @@ set hidden
 set autoread
 set confirm
 set mouse=a
-set clipboard^=unnamed,unnamedplus
+if has('unnamedplus')
+  set clipboard^=unnamed,unnamedplus
+else
+  set clipboard^=unnamed
+endif
 set backspace=indent,eol,start
 set switchbuf=useopen,usetab,newtab
 set wildmenu
 set wildmode=longest:full,full
-set wildignorecase
-set completeopt=menuone,noselect
+if exists('+wildignorecase')
+  set wildignorecase
+endif
+if v:version >= 800
+  set completeopt=menuone,noselect
+else
+  set completeopt=menuone
+endif
 set complete=.,w,b,u,t,i
 set updatetime=300
 set timeoutlen=500
@@ -35,13 +44,17 @@ set history=1000
 set number
 set relativenumber
 set cursorline
-set signcolumn=yes
+if exists('+signcolumn')
+  set signcolumn=yes
+endif
 set showmatch
 set showcmd
 set laststatus=2
 set noshowmode
 set cmdheight=1
-set shortmess+=c
+if v:version >= 800
+  set shortmess+=c
+endif
 set display+=lastline
 set scrolloff=5
 set sidescrolloff=5
@@ -49,10 +62,14 @@ set splitbelow
 set splitright
 set nowrap
 set linebreak
-set breakindent
+if exists('+breakindent')
+  set breakindent
+endif
 set list
 set listchars=tab:>-,trail:.,extends:>,precedes:<,nbsp:+
-set termguicolors
+if exists('+termguicolors')
+  set termguicolors
+endif
 set background=dark
 
 " Built-in Gotham colors, adapted from https://github.com/whatyouhide/vim-gotham
@@ -176,7 +193,9 @@ let s:state_dir = empty($XDG_STATE_HOME)
       \ ? expand('~/.vim/state')
       \ : expand('$XDG_STATE_HOME/vim')
 for s:dir in ['backup', 'swap', 'undo']
-  call mkdir(s:state_dir . '/' . s:dir, 'p', 0700)
+  if !isdirectory(s:state_dir . '/' . s:dir)
+    call mkdir(s:state_dir . '/' . s:dir, 'p')
+  endif
 endfor
 execute 'set backupdir^=' . fnameescape(s:state_dir . '/backup//')
 execute 'set directory^=' . fnameescape(s:state_dir . '/swap//')
@@ -211,8 +230,8 @@ nnoremap <leader>e :Lexplore<CR>
 nnoremap <leader>n :set number! relativenumber!<CR>
 nnoremap <leader>l :set list!<CR>
 nnoremap <leader>z :set wrap!<CR>
-nnoremap <leader>sv :source $MYVIMRC<CR>
-nnoremap <leader>ev :edit $MYVIMRC<CR>
+nnoremap <leader>sv :ReloadVimrc<CR>
+nnoremap <leader>ev :execute 'edit ' . fnameescape(g:modern_vimrc_path)<CR>
 nnoremap <leader>cd :lcd %:p:h<CR>:pwd<CR>
 nnoremap <leader>x :cclose<CR>
 nnoremap <leader>o :copen<CR>
@@ -246,8 +265,13 @@ xnoremap <leader>p "_dP
 nnoremap Y y$
 
 " Command-line and insert-mode completion
-cnoremap <expr> <C-p> wildmenumode() ? "\<Left>" : "\<Up>"
-cnoremap <expr> <C-n> wildmenumode() ? "\<Right>" : "\<Down>"
+if exists('*wildmenumode')
+  cnoremap <expr> <C-p> wildmenumode() ? "\<Left>" : "\<Up>"
+  cnoremap <expr> <C-n> wildmenumode() ? "\<Right>" : "\<Down>"
+else
+  cnoremap <C-p> <Up>
+  cnoremap <C-n> <Down>
+endif
 inoremap <expr> <Tab> pumvisible() ? "\<C-n>" : "\<Tab>"
 inoremap <expr> <S-Tab> pumvisible() ? "\<C-p>" : "\<S-Tab>"
 inoremap <expr> <C-Space> pumvisible() ? "\<C-e>" : "\<C-n>"
@@ -262,20 +286,29 @@ if has('terminal')
 endif
 
 " Useful commands
-command! TrimTrailingWhitespace
-      \ let s:view = winsaveview() |
-      \ keeppatterns %s/\s\+$//e |
-      \ call winrestview(s:view)
-command! ReloadVimrc source $MYVIMRC
+function! s:TrimTrailingWhitespace()
+  let l:view = winsaveview()
+  let l:search = @/
+  silent! %s/\s\+$//
+  let @/ = l:search
+  call winrestview(l:view)
+endfunction
+command! TrimTrailingWhitespace call <SID>TrimTrailingWhitespace()
+command! ReloadVimrc execute 'source ' . fnameescape(g:modern_vimrc_path)
 
 augroup modern_vimrc
   autocmd!
-  autocmd FocusGained,BufEnter,CursorHold,CursorHoldI * checktime
+  autocmd BufEnter,CursorHold,CursorHoldI * checktime
+  if exists('##FocusGained')
+    autocmd FocusGained * checktime
+  endif
   autocmd BufReadPost *
         \ if line("'\"") > 1 && line("'\"") <= line('$') |
         \   execute "normal! g`\"" |
         \ endif
-  autocmd TextYankPost * silent! lua vim.highlight.on_yank()
+  if exists('##TextYankPost') && has('nvim')
+    autocmd TextYankPost * silent! lua vim.highlight.on_yank()
+  endif
   autocmd FileType gitcommit,markdown,text setlocal wrap spell
   autocmd FileType make setlocal noexpandtab
   autocmd FileType help,qf,man nnoremap <buffer> q :close<CR>
