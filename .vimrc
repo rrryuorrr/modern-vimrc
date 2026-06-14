@@ -56,6 +56,26 @@ set termguicolors
 set background=dark
 silent! colorscheme habamax
 
+" GVim-specific appearance and desktop-friendly shortcuts
+if has('gui_running')
+  set title
+  set lines=40
+  set columns=120
+  set guioptions-=T
+  set guioptions-=L
+  set guioptions-=R
+  set guioptions-=l
+  set guioptions-=r
+  set guioptions-=b
+  set guitablabel=%t
+  set mousemodel=popup_setpos
+  if has('win32') || has('win64')
+    set guifont=Consolas:h11
+  else
+    set guifont=Monospace\ 11
+  endif
+endif
+
 " Editing
 set expandtab
 set tabstop=4
@@ -124,6 +144,12 @@ nnoremap <leader>ev :edit $MYVIMRC<CR>
 nnoremap <leader>cd :lcd %:p:h<CR>:pwd<CR>
 nnoremap <leader>x :cclose<CR>
 nnoremap <leader>o :copen<CR>
+
+if has('gui_running')
+  nnoremap <C-s> :write<CR>
+  inoremap <C-s> <C-o>:write<CR>
+  vnoremap <C-s> <Esc>:write<CR>gv
+endif
 
 nnoremap <C-h> <C-w>h
 nnoremap <C-j> <C-w>j
