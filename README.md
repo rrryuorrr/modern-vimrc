@@ -3,11 +3,20 @@
 プラグインを一切使わず、Vim 本体の機能だけで快適さを高めた Vim 8.2+ / Vim 9.x 向け設定です。
 端末版 Vim と GVim の両方で同じ `.vimrc` を利用できます。
 
+## GVim プレビュー
+
+![GVim with the built-in Gotham color scheme](assets/gvim-gotham-preview.png)
+
+非常に暗い青緑系の
+[vim-gotham](https://github.com/whatyouhide/vim-gotham) カラースキームを、
+外部プラグイン不要のビルトイン配色として `.vimrc` に組み込んでいます。
+
 ## できること
 
 ### 編集と表示
 
 - 行番号、相対行番号、カーソル行、不可視文字、24-bit color を表示
+- Gotham カラースキームをプラグインなしで表示
 - 4 スペースのインデント、ビジュアル選択した行の移動、選択範囲を保ったインデント
 - smartcase 対応のインクリメンタル検索、検索ハイライト、置換プレビュー
 - Vim 標準補完を `Tab` / `Shift-Tab` / `Ctrl-Space` で操作
@@ -131,4 +140,5 @@ set shiftwidth=2
 
 ## License
 
-MIT
+MIT。組み込んだ Gotham 配色のライセンスは
+[THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md) を参照してください。
