@@ -11,6 +11,9 @@
 [vim-gotham](https://github.com/whatyouhide/vim-gotham) カラースキームを、
 外部プラグイン不要のビルトイン配色として `.vimrc` に組み込んでいます。
 
+各コマンド、キーマップ、オプションの詳しい使い方は
+[Howtouse.md](Howtouse.md) を参照してください。
+
 ## できること
 
 ### 編集と表示
